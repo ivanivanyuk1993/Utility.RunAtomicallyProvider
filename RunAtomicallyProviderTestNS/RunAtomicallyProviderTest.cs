@@ -10,6 +10,7 @@ using BenchmarkUtilNS;
 using CountProviderNS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RunAtomicallyProviderNS;
+using RunWithoutGCProviderNS;
 
 namespace RunAtomicallyProviderTestNS;
 
