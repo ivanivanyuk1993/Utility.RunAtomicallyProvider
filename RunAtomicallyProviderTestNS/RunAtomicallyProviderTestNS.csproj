@@ -18,6 +18,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\AssertBenchmarkRelatedTestShouldNotRunInDebugProvider\AssertBenchmarkRelatedTestShouldNotRunInDebugProviderNS\AssertBenchmarkRelatedTestShouldNotRunInDebugProviderNS.csproj" />
       <ProjectReference Include="..\..\BenchmarkUtil\BenchmarkUtilNS\BenchmarkUtilNS.csproj" />
+      <ProjectReference Include="..\..\CountProvider\CountProviderNS\CountProviderNS.csproj" />
       <ProjectReference Include="..\RunAtomicallyProviderNS\RunAtomicallyProviderNS.csproj" />
     </ItemGroup>
 

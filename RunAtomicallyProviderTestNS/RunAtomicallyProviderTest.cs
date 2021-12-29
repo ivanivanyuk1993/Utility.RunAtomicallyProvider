@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AssertBenchmarkRelatedTestShouldNotRunInDebugProviderNS;
 using BenchmarkUtilNS;
+using CountProviderNS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RunAtomicallyProviderNS;
 
