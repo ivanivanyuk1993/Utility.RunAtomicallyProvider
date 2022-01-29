@@ -48,7 +48,7 @@ public class RunAtomicallyAsyncProviderTest
                     condition: CausesRaceIncrementFuncWithScheduler(
                         incrementFunc: countProvider =>
                         {
-                            shardedSpinningAsyncAtomicScheduler.RunAtomicallyAsync(
+                            shardedSpinningAsyncAtomicScheduler.RunAtomicallyAsyncAction(
                                 asyncAction: countProvider.IncrementUnsafeAsync);
                         },
                         scheduler: scheduler
@@ -71,7 +71,7 @@ public class RunAtomicallyAsyncProviderTest
                     condition: CausesRaceIncrementFuncWithScheduler(
                         incrementFunc: countProvider =>
                         {
-                            shardedSpinningAsyncAtomicScheduler.RunAtomicallyAsync(
+                            shardedSpinningAsyncAtomicScheduler.RunAtomicallyAsyncAction(
                                 asyncAction: countProvider.IncrementUnsafeAsync);
                         },
                         scheduler: scheduler
