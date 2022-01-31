@@ -17,7 +17,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\CountProvider\CountProviderNS\CountProviderNS.csproj" />
-      <ProjectReference Include="..\RunAtomicallyAsyncProviderNS\RunAtomicallyAsyncProviderNS.csproj" />
+      <ProjectReference Include="..\RunAsyncActionAtomicallyProviderNS\RunAsyncActionAtomicallyProviderNS.csproj" />
     </ItemGroup>
 
 </Project>

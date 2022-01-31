@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CountProviderNS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RunAtomicallyAsyncProviderNS;
+using RunAsyncActionAtomicallyProviderNS;
 
 namespace RunAtomicallyAsyncProviderTestNS;
 
@@ -43,12 +43,12 @@ public class RunAtomicallyAsyncProviderTest
         RunWithSchedulerAndHandleDisposal(
             action: scheduler =>
             {
-                var shardedSpinningAsyncAtomicScheduler = new RunAtomicallyAsyncProvider();
+                var shardedSpinningAsyncAtomicScheduler = new RunAsyncActionAtomicallyProvider();
                 Assert.IsFalse(
                     condition: CausesRaceIncrementFuncWithScheduler(
                         incrementFunc: countProvider =>
                         {
-                            shardedSpinningAsyncAtomicScheduler.RunAtomicallyAsyncAction(
+                            shardedSpinningAsyncAtomicScheduler.RunAsyncActionAtomically(
                                 asyncAction: countProvider.IncrementUnsafeAsync);
                         },
                         scheduler: scheduler
@@ -66,12 +66,12 @@ public class RunAtomicallyAsyncProviderTest
         RunWithSchedulerAndHandleDisposal(
             action: scheduler =>
             {
-                var shardedSpinningAsyncAtomicScheduler = new RunAtomicallyAsyncProvider();
+                var shardedSpinningAsyncAtomicScheduler = new RunAsyncActionAtomicallyProvider();
                 Assert.IsFalse(
                     condition: CausesRaceIncrementFuncWithScheduler(
                         incrementFunc: countProvider =>
                         {
-                            shardedSpinningAsyncAtomicScheduler.RunAtomicallyAsyncAction(
+                            shardedSpinningAsyncAtomicScheduler.RunAsyncActionAtomically(
                                 asyncAction: countProvider.IncrementUnsafeAsync);
                         },
                         scheduler: scheduler
