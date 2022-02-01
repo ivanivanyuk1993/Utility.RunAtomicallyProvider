@@ -1,13 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <OutputType>Exe</OutputType>
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\RunAsyncActionAtomicallyProviderNS\RunAsyncActionAtomicallyProviderNS.csproj" />
+        <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\CountProvider\CountProviderNS\CountProviderNS.csproj" />
+      <ProjectReference Include="..\..\ShardedQueue\ShardedQueueBenchmarkNS\ShardedQueueBenchmarkNS.csproj" />
       <ProjectReference Include="..\RunAtomicallyProviderNS\RunAtomicallyProviderNS.csproj" />
     </ItemGroup>
 
