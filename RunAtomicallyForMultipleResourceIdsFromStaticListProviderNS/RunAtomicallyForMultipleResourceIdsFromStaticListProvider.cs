@@ -5,11 +5,17 @@ using RunAtomicallyForMultipleResourceIdsProviderNS;
 namespace RunAtomicallyForMultipleResourceIdsFromStaticListProviderNS;
 
 /// <summary>
-///     <see cref="RunAtomicallyForMultipleResourceIdsFromStaticListProvider{TResourceId}" /> is a perfect fit for cases
-///     like work with some limited-length collections, or cases, when we want to run logic with lock on one property,
+///     <see cref="RunAtomicallyForMultipleResourceIdsFromStaticListProvider{TResourceId}" /> is an experiment to create
+///     a perfect fit for cases like work with some limited-length collections, or cases,
+///     when we want to run logic with lock on one property,
 ///     but in other cases - with lock on multiple properties, including first one
 ///     (like in <see cref="PollSchedulingReactiveValueProvider" />, where we have 3 properties, which we want to
 ///     lock separately in some cases, and together - in other cases)
+///
+///     According to benchmarks, in most cases it takes more time than simple
+///     <see cref="RunAtomicallyProviderNS.RunAtomicallyProvider"/>, and is much less efficient
+///     (requires more synchronization, CPU cycles, which could be spent on serving more requests).
+///     It takes less time only under extremely high loads, so todo - revisit it after more processors is the new norm
 ///
 ///     todo make it work with different <see cref="IScheduler" />-s, not only with default scheduler for tasks(ThreadPool)
 /// </summary>
