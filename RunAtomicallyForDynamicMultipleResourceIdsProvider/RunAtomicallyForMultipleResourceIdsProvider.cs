@@ -1,4 +1,10 @@
-﻿// todo
+﻿// todo It looks like it needs too much contention(work-load or CPU cores) to finish work faster
+// (in time, but less efficient from perspective of spent CPU cycles) than `RunAtomicallyProvider`, so revisit this
+// class when there are processors with thousands cores or
+// when there are tasks which do heavy jobs under different resource ids
+// (doing operations on nodes in trees or linked lists is cheap, so concurrent collections won't benefit from it
+// until there is contention from other sources, like contention which can be caused by thousands of cores)
+
 // using System.Collections.Concurrent;
 // using IsLockedAndQueueNS;
 // using RunAsyncActionAtomicallyProviderNS;
