@@ -8,10 +8,10 @@ using CountProviderNS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RunAsyncActionAtomicallyProviderNS;
 
-namespace RunAtomicallyAsyncProviderTestNS;
+namespace RunAsyncActionAtomicallyProviderTestNS;
 
 [TestClass]
-public class RunAtomicallyAsyncProviderTest
+public class RunAsyncActionAtomicallyProviderTest
 {
     private const int AccessCount = (int) 1e5;
 

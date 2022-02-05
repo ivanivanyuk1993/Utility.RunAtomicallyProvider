@@ -1,9 +1,10 @@
-﻿// using System.Collections.Concurrent;
+﻿// todo
+// using System.Collections.Concurrent;
 // using IsLockedAndQueueNS;
 // using RunAsyncActionAtomicallyProviderNS;
 // using SpinLockUtilNS;
 //
-// namespace RunAtomicallyForMultipleResourceIdsAsyncProviderNS;
+// namespace RunAtomicallyForMultipleResourceIdsProviderNS;
 //
 // /// <summary>
 // ///     todo make it work with different <see cref="IScheduler" />-s, not only with default scheduler for tasks(ThreadPool)

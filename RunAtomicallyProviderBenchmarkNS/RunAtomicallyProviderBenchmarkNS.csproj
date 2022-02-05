@@ -13,7 +13,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\CountProvider\CountProviderNS\CountProviderNS.csproj" />
-      <ProjectReference Include="..\..\ShardedQueue\ShardedQueueBenchmarkNS\ShardedQueueBenchmarkNS.csproj" />
+      <ProjectReference Include="..\..\RunWithMaxConcurrencyProvider\RunWithMaxConcurrencyProviderNS\RunWithMaxConcurrencyProviderNS.csproj" />
       <ProjectReference Include="..\RunAtomicallyProviderNS\RunAtomicallyProviderNS.csproj" />
     </ItemGroup>
 

@@ -1,6 +1,6 @@
 using BenchmarkDotNet.Attributes;
 using RunAtomicallyProviderNS;
-using ShardedQueueBenchmarkNS;
+using RunWithMaxConcurrencyProviderNS;
 
 namespace RunAtomicallyProviderBenchmarkNS;
 

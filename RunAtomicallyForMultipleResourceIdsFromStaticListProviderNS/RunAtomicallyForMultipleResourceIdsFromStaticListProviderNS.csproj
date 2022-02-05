@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\RunAsyncActionAtomicallyProviderNS\RunAsyncActionAtomicallyProviderNS.csproj" />
+      <ProjectReference Include="..\RunAtomicallyForMultipleResourceIdsProviderNS\RunAtomicallyForMultipleResourceIdsProviderNS.csproj" />
       <ProjectReference Include="..\RunAtomicallyProviderNS\RunAtomicallyProviderNS.csproj" />
     </ItemGroup>
 

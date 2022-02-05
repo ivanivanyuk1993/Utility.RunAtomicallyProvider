@@ -1,6 +1,6 @@
 using RunAtomicallyProviderNS;
 
-namespace RunAtomicallyForMultipleResourceIdsAsyncProviderNS;
+namespace RunAtomicallyForMultipleResourceIdsFromStaticListProviderNS;
 
 internal class ResourceQueue
 {
