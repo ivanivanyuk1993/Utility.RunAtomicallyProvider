@@ -21,7 +21,7 @@ namespace RunAtomicallyForMultipleResourceIdsFromStaticListProviderNS;
 ///     when used with low contention(like for O(1) collection operations, or other short-running operations,
 ///     or longer running operations on smaller core counts) doesn't save time and adds more synchronization, on longer
 ///     running async operations it does save time, but in this case you most likely want to use
-///     <see cref="AsyncReadWriteLockForMultipleResourceIds"/>
+///     <see cref="IAsyncReadWriteLockForMultipleResourceIds"/>
 ///
 ///     todo make it work with different <see cref="IScheduler" />-s, not only with default scheduler for tasks(ThreadPool)
 /// </summary>
