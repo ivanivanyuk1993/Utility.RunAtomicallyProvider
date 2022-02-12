@@ -17,6 +17,12 @@ namespace RunAtomicallyForMultipleResourceIdsFromStaticListProviderNS;
 ///     (requires more synchronization, CPU cycles, which could be spent on serving more requests).
 ///     It takes less time only under extremely high loads, so todo - revisit it after more processors is the new norm
 ///
+///     Notice that, while <see cref="RunAtomicallyForMultipleResourceIdsFromStaticListProvider{TResourceId}" />,
+///     when used with low contention(like for O(1) collection operations, or other short-running operations,
+///     or longer running operations on smaller core counts) doesn't save time and adds more synchronization, on longer
+///     running async operations it does save time, but in this case you most likely want to use
+///     <see cref="AsyncReadWriteLockForMultipleResourceIds"/>
+///
 ///     todo make it work with different <see cref="IScheduler" />-s, not only with default scheduler for tasks(ThreadPool)
 /// </summary>
 /// <typeparam name="TResourceId"></typeparam>
