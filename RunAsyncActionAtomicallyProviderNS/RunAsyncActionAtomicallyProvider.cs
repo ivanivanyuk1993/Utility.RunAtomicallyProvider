@@ -44,6 +44,18 @@ public class RunAsyncActionAtomicallyProvider
         }
     }
 
+    public Task<T> RunAsyncActionAtomicallyAndGetResultAsync<T>(Func<Task<T>> asyncActionWithResult)
+    {
+        var taskCompletionSource = new TaskCompletionSource<T>();
+
+        RunAsyncActionAtomically(asyncAction: async () =>
+        {
+            taskCompletionSource.SetResult(result: await asyncActionWithResult());
+        });
+
+        return taskCompletionSource.Task;
+    }
+
     private async Task StartAsyncActionLoop(Func<Task> firstAsyncAction)
     {
         // If we acquired first lock, `firstAsyncAction` should be executed immediately and firstAsyncAction loop started
