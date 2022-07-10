@@ -15,9 +15,6 @@ namespace RunAtomicallyProviderNS;
 ///         <see cref="RunAtomicallyProvider" /> doesn't guarantee order of execution too, even of already added
 ///         items
 ///     </para>
-///     <para>
-///         todo remove support of <see cref="Task"/>-s
-///     </para>
 /// </summary>
 public class RunAtomicallyProvider
 {
@@ -35,22 +32,8 @@ public class RunAtomicallyProvider
     }
 
     /// <summary>
-    ///     Please don't forget that order of execution is not guaranteed. Atomicity of operations is guaranteed, but order can
-    ///     be random
-    /// </summary>
-    /// <param name="runAndGetResultFunc"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    public Task<T> RunAtomicallyAndGetResultAsync<T>(Func<T> runAndGetResultFunc)
-    {
-        var taskCompletionSource = new TaskCompletionSource<T>();
-        RunAtomically(action: () => { taskCompletionSource.SetResult(result: runAndGetResultFunc()); });
-        return taskCompletionSource.Task;
-    }
-
-    /// <summary>
-    ///     Please don't forget that order of execution is not guaranteed. Atomicity of operations is guaranteed, but order can
-    ///     be random
+    ///     Please don't forget that order of execution is not guaranteed. Atomicity of operations is guaranteed,
+    ///     but order can be random
     /// </summary>
     /// <param name="action"></param>
     public void RunAtomically(Action action)
@@ -72,25 +55,8 @@ public class RunAtomicallyProvider
     }
 
     /// <summary>
-    ///     Please don't forget that order of execution is not guaranteed. Atomicity of operations is guaranteed, but order can
-    ///     be random
-    /// </summary>
-    /// <param name="action"></param>
-    /// <returns><see cref="Task" />, which will complete after action was run</returns>
-    public Task RunAtomicallyAndGetAwaiter(Action action)
-    {
-        var taskCompletionSource = new TaskCompletionSource();
-        RunAtomically(action: () =>
-        {
-            action();
-            taskCompletionSource.SetResult();
-        });
-        return taskCompletionSource.Task;
-    }
-
-    /// <summary>
-    ///     Please don't forget that order of execution is not guaranteed. Atomicity of operations is guaranteed, but order can
-    ///     be random
+    ///     Please don't forget that order of execution is not guaranteed. Atomicity of operations is guaranteed,
+    ///     but order can be random
     /// </summary>
     /// <param name="action"></param>
     /// <returns><see cref="IObservable{Unit}" />, which will complete after action was run</returns>
@@ -101,31 +67,127 @@ public class RunAtomicallyProvider
             RunAtomically(action: () =>
             {
                 action();
+                // Notice that Rx supports `IScheduler`-s, so these methods can run outside of atomic operation loop,
+                // which is efficient
                 observer.OnNext(value: Unit.Default);
                 observer.OnCompleted();
             });
 
+            // We do not support cancellation, because we expect that cancelling actions is a rare event,
+            // and checking if `IsCancellationRequested` every time can take more time than
+            // running rarely cancelled action itself
             return Disposable.Empty;
         });
     }
 
     /// <summary>
-    ///     Please don't forget that order of execution is not guaranteed. Atomicity of operations is guaranteed, but order can
-    ///     be random
+    ///     Please don't forget that order of execution is not guaranteed. Atomicity of operations is guaranteed,
+    ///     but order can be random
     /// </summary>
-    /// <param name="runAndGetResultFunc"></param>
-    /// <returns><see cref="IObservable{T}" />, which will complete after action was run</returns>
-    public IObservable<T> RunAtomicallyAndGetResultObservable<T>(Func<T> runAndGetResultFunc)
+    /// <param name="expensiveCancellableAction">
+    ///     We want to spend in atomic operation loop as little time as possible(to allow parallel execution),
+    ///     hence we allow passing <see cref="CancellationToken" /> to heavy methods
+    /// </param>
+    /// <returns><see cref="IObservable{Unit}" />, which will complete after action was run</returns>
+    public IObservable<Unit> RunAtomicallyReactive(Action<CancellationToken> expensiveCancellableAction)
     {
-        return Observable.Create<T>(subscribe: observer =>
+        return Observable.Defer(observableFactory: () =>
+        {
+            var cancellationTokenSource = new CancellationTokenSource();
+
+            return Observable
+                .Create<Unit>(subscribe: observer =>
+                {
+                    RunAtomically(action: () =>
+                    {
+                        if (!cancellationTokenSource.IsCancellationRequested)
+                        {
+                            expensiveCancellableAction(obj: cancellationTokenSource.Token);
+                            // Notice that Rx supports `IScheduler`-s, so these methods can run outside of atomic
+                            // operation loop, which is efficient
+                            observer.OnNext(value: Unit.Default);
+                        }
+
+                        // Notice that Rx supports `IScheduler`-s, so these methods can run outside of atomic
+                        // operation loop, which is efficient
+                        observer.OnCompleted();
+                    });
+
+                    return cancellationTokenSource.Cancel;
+                })
+                .Finally(finallyAction: () =>
+                {
+                    // We do want to run disposal outside of atomic operation loop(to support parallelism)
+                    cancellationTokenSource.Dispose();
+                });
+        });
+    }
+
+    /// <summary>
+    ///     Please don't forget that order of execution is not guaranteed. Atomicity of operations is guaranteed,
+    ///     but order can be random
+    ///     <returns><see cref="IObservable{Unit}" />, which will complete after action was run</returns>
+    /// </summary>
+    public IObservable<TResult> RunAtomicallyWithResultObservable<TResult>(Func<TResult> runWithResultFunc)
+    {
+        return Observable.Create<TResult>(subscribe: observer =>
         {
             RunAtomically(action: () =>
             {
-                observer.OnNext(value: runAndGetResultFunc());
+                // Notice that Rx supports `IScheduler`-s, so these methods can run outside of atomic operation loop,
+                // which is efficient
+                observer.OnNext(value: runWithResultFunc());
                 observer.OnCompleted();
             });
 
+            // We do not support cancellation, because we expect that cancelling actions is a rare event,
+            // and checking if `IsCancellationRequested` every time can take more time than
+            // running rarely cancelled action itself
             return Disposable.Empty;
+        });
+    }
+
+    /// <summary>
+    ///     Please don't forget that order of execution is not guaranteed. Atomicity of operations is guaranteed,
+    ///     but order can be random
+    /// </summary>
+    /// <param name="runWithResultExpensiveFunc">
+    ///     We want to spend in atomic operation loop as little time as possible(to allow parallel execution),
+    ///     hence we allow passing <see cref="CancellationToken" /> to heavy methods
+    /// </param>
+    /// <returns><see cref="IObservable{Unit}" />, which will complete after action was run</returns>
+    public IObservable<TResult> RunAtomicallyWithResultObservable<TResult>(
+        Func<CancellationToken, TResult> runWithResultExpensiveFunc
+    )
+    {
+        return Observable.Defer(observableFactory: () =>
+        {
+            var cancellationTokenSource = new CancellationTokenSource();
+
+            return Observable
+                .Create<TResult>(subscribe: observer =>
+                {
+                    RunAtomically(action: () =>
+                    {
+                        if (!cancellationTokenSource.IsCancellationRequested)
+                        {
+                            // Notice that Rx supports `IScheduler`-s, so these methods can run outside of atomic
+                            // operation loop, which is efficient
+                            observer.OnNext(value: runWithResultExpensiveFunc(arg: cancellationTokenSource.Token));
+                        }
+
+                        // Notice that Rx supports `IScheduler`-s, so these methods can run outside of atomic
+                        // operation loop, which is efficient
+                        observer.OnCompleted();
+                    });
+
+                    return cancellationTokenSource.Cancel;
+                })
+                .Finally(finallyAction: () =>
+                {
+                    // We do want to run disposal outside of atomic operation loop(to support parallelism)
+                    cancellationTokenSource.Dispose();
+                });
         });
     }
 }
