@@ -1,4 +1,7 @@
-﻿using ShardedQueueNS;
+﻿using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using ShardedQueueNS;
 
 namespace RunAtomicallyProviderNS;
 
@@ -11,6 +14,9 @@ namespace RunAtomicallyProviderNS;
 ///         Notice that it uses <see cref="ShardedQueue{T}" />, which doesn't guarantee order of retrieval, hence
 ///         <see cref="RunAtomicallyProvider" /> doesn't guarantee order of execution too, even of already added
 ///         items
+///     </para>
+///     <para>
+///         todo remove support of <see cref="Task"/>-s
 ///     </para>
 /// </summary>
 public class RunAtomicallyProvider
@@ -70,7 +76,7 @@ public class RunAtomicallyProvider
     ///     be random
     /// </summary>
     /// <param name="action"></param>
-    /// <returns><see cref="Task"/>, which will complete after action was run</returns>
+    /// <returns><see cref="Task" />, which will complete after action was run</returns>
     public Task RunAtomicallyAndGetAwaiter(Action action)
     {
         var taskCompletionSource = new TaskCompletionSource();
@@ -80,5 +86,46 @@ public class RunAtomicallyProvider
             taskCompletionSource.SetResult();
         });
         return taskCompletionSource.Task;
+    }
+
+    /// <summary>
+    ///     Please don't forget that order of execution is not guaranteed. Atomicity of operations is guaranteed, but order can
+    ///     be random
+    /// </summary>
+    /// <param name="action"></param>
+    /// <returns><see cref="IObservable{Unit}" />, which will complete after action was run</returns>
+    public IObservable<Unit> RunAtomicallyReactive(Action action)
+    {
+        return Observable.Create<Unit>(subscribe: observer =>
+        {
+            RunAtomically(action: () =>
+            {
+                action();
+                observer.OnNext(value: Unit.Default);
+                observer.OnCompleted();
+            });
+
+            return Disposable.Empty;
+        });
+    }
+
+    /// <summary>
+    ///     Please don't forget that order of execution is not guaranteed. Atomicity of operations is guaranteed, but order can
+    ///     be random
+    /// </summary>
+    /// <param name="runAndGetResultFunc"></param>
+    /// <returns><see cref="IObservable{T}" />, which will complete after action was run</returns>
+    public IObservable<T> RunAtomicallyAndGetResultObservable<T>(Func<T> runAndGetResultFunc)
+    {
+        return Observable.Create<T>(subscribe: observer =>
+        {
+            RunAtomically(action: () =>
+            {
+                observer.OnNext(value: runAndGetResultFunc());
+                observer.OnCompleted();
+            });
+
+            return Disposable.Empty;
+        });
     }
 }
